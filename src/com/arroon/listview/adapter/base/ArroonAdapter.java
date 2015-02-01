@@ -70,6 +70,7 @@ public class ArroonAdapter<E> extends BaseAdapter {
 					break;
 				case BUTTON:
 					((Button) view).setText(text);
+					break;
 				default:
 					break;
 				}
