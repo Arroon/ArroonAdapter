@@ -25,13 +25,20 @@ public class ArroonAdapter<E> extends BaseAdapter {
 	private AdapterImageLoader imageLoader;
 
 	public ArroonAdapter(Context context, int layoutId, List<E> list,
-			List<DataType> dataTypes, AdapterImageLoader displayImage) {
+			List<DataType> dataTypes) {
 		super();
 		this.context = context;
 		this.layoutId = layoutId;
 		this.list = list;
 		this.dataTypes = dataTypes;
-		this.imageLoader = displayImage;
+	}
+
+	public static interface AdapterImageLoader {
+		public void displayImage(ImageView imageView, String url);
+	}
+
+	public void setImageLoader(AdapterImageLoader imageLoader) {
+		this.imageLoader = imageLoader;
 	}
 
 	@Override
@@ -61,19 +68,19 @@ public class ArroonAdapter<E> extends BaseAdapter {
 			try {
 				Method method = o.getClass().getMethod(dataType.methodName);
 				String text = (String) method.invoke(o);
-				switch (dataType.viewType) {
-				case TEXT_VIEW:
-					((TextView) view).setText(text);
-					break;
-				case IMAGE_VIEW:
-					imageLoader.displayImage((ImageView) view, text);
-					break;
-				case BUTTON:
+				if (view instanceof ImageView) {
+					if (imageLoader != null) {
+						imageLoader.displayImage((ImageView) view, text);
+					}
+				} else if (view instanceof Button) {
 					((Button) view).setText(text);
-					break;
-				default:
-					break;
-				}
+				} else if (view instanceof TextView) {
+					((TextView) view).setText(text);
+				} else {
+					throw new IllegalStateException(view.getClass().getName()
+							+ " is not a "
+							+ " view that can be bounds by this SimpleAdapter");
+				}// 可以针对业务适配更多空间
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -81,14 +88,6 @@ public class ArroonAdapter<E> extends BaseAdapter {
 		}
 		addInternalClickListener(convertView, position, list.get(position));
 		return convertView;
-	}
-
-	@SuppressLint("UseSparseArrays")
-	public void setOnInViewClickListener(Integer key,
-			onInternalClickListener onClickListener) {
-		if (canClickItem == null)
-			canClickItem = new HashMap<Integer, onInternalClickListener>();
-		canClickItem.put(key, onClickListener);
 	}
 
 	public interface onInternalClickListener {
@@ -118,7 +117,11 @@ public class ArroonAdapter<E> extends BaseAdapter {
 		}
 	}
 
-	public static interface AdapterImageLoader {
-		public void displayImage(ImageView imageView, String url);
+	@SuppressLint("UseSparseArrays")
+	public void setOnInViewClickListener(Integer key,
+			onInternalClickListener onClickListener) {
+		if (canClickItem == null)
+			canClickItem = new HashMap<Integer, onInternalClickListener>();
+		canClickItem.put(key, onClickListener);
 	}
 }

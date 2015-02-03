@@ -3,8 +3,8 @@ package com.arroon.listview;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -18,7 +18,7 @@ import com.arroon.listview.adapter.base.DataType;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
 
 	List<Movie> movies;
 
@@ -28,24 +28,17 @@ public class MainActivity extends ActionBarActivity {
 		ListView listView = new ListView(this);
 		setContentView(listView);
 
-		movies = new ArrayList<>();
-		movies.add(new Movie("露水红颜", "drawable://" + R.drawable.image1, "立即下载"));
-		movies.add(new Movie("别相信任何人", "drawable://" + R.drawable.image2,
-				"立即观看"));
-		movies.add(new Movie("PENGUINS", "drawable://" + R.drawable.image3,
-				"付费观看"));
-		movies.add(new Movie("CARGO", "drawable://" + R.drawable.image4, "立即下载"));
-		movies.add(new Movie("单身男女2", "drawable://" + R.drawable.image5, "立即下载"));
-		movies.add(new Movie("GIVER", "drawable://" + R.drawable.image6, "立即下载"));
+		getData();
 
-		List<DataType> dataTypes = new ArrayList<>();
-		dataTypes.add(new DataType(DataType.ViewType.TEXT_VIEW, "getName",
-				R.id.tv_1));
-		dataTypes.add(new DataType(DataType.ViewType.IMAGE_VIEW, "getLogo",
-				R.id.iv));
-		dataTypes.add(new DataType(DataType.ViewType.BUTTON, "getButtonText",
-				R.id.btn));
+		List<DataType> dataTypes = new ArrayList<DataType>();
+		dataTypes.add(new DataType("getName", R.id.tv_1));
+		dataTypes.add(new DataType("getLogo", R.id.iv));
+		dataTypes.add(new DataType("getButtonText", R.id.btn));
 
+		ArroonAdapter<Movie> adapter = new ArroonAdapter<Movie>(this,
+				R.layout.item_movie, movies, dataTypes);
+
+		// 如果要显示图片，则需要设置imageloader
 		AdapterImageLoader imageLoader = new AdapterImageLoader() {
 			@Override
 			public void displayImage(ImageView imageView, String url) {
@@ -55,9 +48,8 @@ public class MainActivity extends ActionBarActivity {
 				ImageLoader.getInstance().displayImage(url, imageView);
 			}
 		};
+		adapter.setImageLoader(imageLoader);
 
-		ArroonAdapter<Movie> adapter = new ArroonAdapter<Movie>(this,
-				R.layout.item_movie, movies, dataTypes, imageLoader);
 		listView.setAdapter(adapter);
 		adapter.setOnInViewClickListener(R.id.btn,
 				new ArroonAdapter.onInternalClickListener() {
@@ -80,5 +72,17 @@ public class MainActivity extends ActionBarActivity {
 						Toast.LENGTH_SHORT).show();
 			}
 		});
+	}
+
+	private void getData() {
+		movies = new ArrayList<Movie>();
+		movies.add(new Movie("露水红颜", "drawable://" + R.drawable.image1, "立即下载"));
+		movies.add(new Movie("别相信任何人", "drawable://" + R.drawable.image2,
+				"立即观看"));
+		movies.add(new Movie("PENGUINS", "drawable://" + R.drawable.image3,
+				"付费观看"));
+		movies.add(new Movie("CARGO", "drawable://" + R.drawable.image4, "立即下载"));
+		movies.add(new Movie("单身男女2", "drawable://" + R.drawable.image5, "立即下载"));
+		movies.add(new Movie("GIVER", "drawable://" + R.drawable.image6, "立即下载"));
 	}
 }
