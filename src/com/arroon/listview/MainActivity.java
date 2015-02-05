@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.arroon.listview.adapter.base.ArroonAdapter;
 import com.arroon.listview.adapter.base.ArroonAdapter.AdapterImageLoader;
-import com.arroon.listview.adapter.base.DataType;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -30,13 +29,11 @@ public class MainActivity extends Activity {
 
 		getData();
 
-		List<DataType> dataTypes = new ArrayList<DataType>();
-		dataTypes.add(new DataType("getName", R.id.tv_1));
-		dataTypes.add(new DataType("getLogo", R.id.iv));
-		dataTypes.add(new DataType("getButtonText", R.id.btn));
-
 		ArroonAdapter<Movie> adapter = new ArroonAdapter<Movie>(this,
-				R.layout.item_movie, movies, dataTypes);
+				R.layout.item_movie, 
+				movies, 
+				new String[] { "getName", "getLogo", "getButtonText" },
+				new int[] { R.id.tv_1, R.id.iv, R.id.btn });
 
 		// 如果要显示图片，则需要设置imageloader
 		AdapterImageLoader imageLoader = new AdapterImageLoader() {

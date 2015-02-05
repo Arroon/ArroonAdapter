@@ -19,18 +19,20 @@ import android.widget.TextView;
 public class ArroonAdapter<E> extends BaseAdapter {
 
 	private Context context;
-	private int layoutId;
 	private List<E> list;
-	private List<DataType> dataTypes;
+	private int layoutId;
+	private String[] from;
+	private int[] to;
 	private AdapterImageLoader imageLoader;
 
 	public ArroonAdapter(Context context, int layoutId, List<E> list,
-			List<DataType> dataTypes) {
+			String[] from, int[] to) {
 		super();
 		this.context = context;
-		this.layoutId = layoutId;
 		this.list = list;
-		this.dataTypes = dataTypes;
+		this.layoutId = layoutId;
+		this.from = from;
+		this.to = to;
 	}
 
 	public static interface AdapterImageLoader {
@@ -63,10 +65,11 @@ public class ArroonAdapter<E> extends BaseAdapter {
 					false);
 		}
 		Object o = list.get(position);
-		for (DataType dataType : dataTypes) {
-			View view = ViewHolder.get(convertView, dataType.viewId);
+		final int count = to.length;
+		for (int i = 0; i < count; i++) {
+			View view = ViewHolder.get(convertView, to[i]);
 			try {
-				Method method = o.getClass().getMethod(dataType.methodName);
+				Method method = o.getClass().getMethod(from[i]);
 				String text = (String) method.invoke(o);
 				if (view instanceof ImageView) {
 					if (imageLoader != null) {
@@ -84,7 +87,6 @@ public class ArroonAdapter<E> extends BaseAdapter {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 		}
 		addInternalClickListener(convertView, position, list.get(position));
 		return convertView;
